@@ -12,7 +12,7 @@ Add this to your project's composer.json...
 ```
 {
     "require": {
-        "camilord/xfpdf": ">=1.*"
+        "camilord/xfpdf": "1.*"
     }
 }
 ```
