@@ -11,7 +11,7 @@ namespace camilord\xfpdf;
 
 use camilord\xfpdf\fpdf\FPDF_Protection;
 
-class XFPDF extends FPDF_Protection
+class XFPDF_CORE extends FPDF_Protection
 {
 
     private $font_family = 'Arial';
@@ -67,7 +67,7 @@ class XFPDF extends FPDF_Protection
         $this->Cell(array_sum($w),0,'','T');
     }
 
-    function renderParagraph($building_address, $x_axis, $max = 42, $font_size = 10, $font_style = 'B') {
+    public function renderParagraph($building_address, $x_axis, $max = 42, $font_size = 10, $font_style = 'B') {
         $addr = array();
         if (strlen(trim($building_address)) > $max) {
             $tmp = explode(' ', trim($building_address));
@@ -105,7 +105,7 @@ class XFPDF extends FPDF_Protection
         }
     }
 
-    function WriteHTML($html)
+    public function WriteHTML($html)
     {
         //$this->debug = true;
         $allowed_tags = "<pagebreak><runpdf><a><img><p><br><font><table><tr><td><blockquote><h1><h2><h3><h4><pre><red><blue><li><lib><hr><b><i><u><strong><em>";
@@ -215,7 +215,7 @@ class XFPDF extends FPDF_Protection
         }
     }
 
-    function OpenTag($tag,$attr)
+    public function OpenTag($tag,$attr)
     {
         //Opening tag
         switch($tag) {
@@ -355,7 +355,7 @@ class XFPDF extends FPDF_Protection
         }
     }
 
-    function CloseTag($tag)
+    public function CloseTag($tag)
     {
         //Closing tag
         if ($tag=='H1' || $tag=='H2' || $tag=='H3' || $tag=='H4'){
@@ -416,7 +416,7 @@ class XFPDF extends FPDF_Protection
         }
     }
 
-    function SetStyle($tag,$enable)
+    public function SetStyle($tag,$enable)
     {
         $this->$tag+=($enable ? 1 : -1);
         $style='';
@@ -427,7 +427,7 @@ class XFPDF extends FPDF_Protection
         $this->SetFont('',$style);
     }
 
-    function PutLink($URL,$txt)
+    public function PutLink($URL,$txt)
     {
         //Put a hyperlink
         $this->SetTextColor(0,0,255);
@@ -437,14 +437,14 @@ class XFPDF extends FPDF_Protection
         $this->mySetTextColor(-1);
     }
 
-    function PutLine()
+    public function PutLine()
     {
         $this->Ln(2);
         $this->Line($this->GetX(),$this->GetY(),$this->GetX()+187,$this->GetY());
         $this->Ln(3);
     }
 
-    function mySetTextColor($r,$g=0,$b=0){
+    public function mySetTextColor($r,$g=0,$b=0){
         static $_r=0, $_g=0, $_b=0;
 
         if ($r==-1)

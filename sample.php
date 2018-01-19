@@ -7,12 +7,14 @@
  * Time: 12:30 AM
  */
 
+use camilord\xfpdf\XFPDF_CORE;
+
 function __autoload($class_name) {
     $filename = str_replace(['//', '\\'], '/',__DIR__.'/'.basename($class_name).'.php');
     include_once($filename);
 }
 
-$pdf = new \camilord\xfpdf\XFPDF('L', 'mm', 'A4');
+$pdf = new XFPDF_CORE('L', 'mm', 'A4');
 
 $pdf->Open();
 $pdf->SetMargins(20,50);
