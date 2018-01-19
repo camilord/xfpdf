@@ -16,3 +16,22 @@ Add this to your project's composer.json...
     }
 }
 ```
+
+Usage:
+
+```
+
+$pdf = new XFPDF_CORE();
+
+```
+
+```
+use camilord/xfpdf/XFPDF_CORE;
+
+class myPDF extends XFPDF_CORE {
+   
+}
+
+```
+
+Full sample codes, see sample.php
