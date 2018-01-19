@@ -8,9 +8,9 @@
  * @version   1.6.0
  */
 
-namespace camilord\xfpdf\fpdf;
+namespace camilord\xfpdf;
 
-use camilord\xfpdf\fpdf\FPDF_TPL;
+use camilord\xfpdf\FPDF_TPL;
 
 
 /**

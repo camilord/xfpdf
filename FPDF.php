@@ -7,7 +7,7 @@
 * Author:  Olivier PLATHEY                                                     *
 *******************************************************************************/
 
-namespace camilord\xfpdf\fpdf;
+namespace camilord\xfpdf;
 
 define('FPDF_VERSION','1.7');
 define('FPDF_FONTPATH', str_replace('//', '/', __DIR__.'/font'));

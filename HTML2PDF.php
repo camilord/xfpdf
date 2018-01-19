@@ -5,10 +5,10 @@
  * Date: 10 Nov 2015
  * Time: 12:13 AM
  */
-namespace camilord\xfpdf\fpdf;
+namespace camilord\xfpdf;
 
-use camilord\xfpdf\fpdf\FPDF;
-use camilord\xfpdf\fpdf\FPDI;
+use camilord\xfpdf\FPDF;
+use camilord\xfpdf\FPDI;
 
 //HTML2PDF by Clément Lavoillotte
 //ac.lavoillotte@noos.fr

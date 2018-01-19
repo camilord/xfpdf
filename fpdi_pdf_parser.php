@@ -8,9 +8,9 @@
  * @version   1.6.0
  */
 
-namespace camilord\xfpdf\fpdf;
+namespace camilord\xfpdf;
 
-use camilord\xfpdf\fpdf\pdf_parser;
+use camilord\xfpdf\pdf_parser;
 
 /**
  * Class fpdi_pdf_parser

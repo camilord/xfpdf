@@ -41,10 +41,10 @@ Notes:
  *
  */
 
-namespace camilord\xfpdf\fpdf;
+namespace camilord\xfpdf;
 
-use camilord\xfpdf\fpdf\FPDI;
-use camilord\xfpdf\fpdf\HTML2PDF;
+use camilord\xfpdf\FPDI;
+use camilord\xfpdf\HTML2PDF;
 
 if(function_exists('mcrypt_encrypt'))
 {

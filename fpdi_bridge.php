@@ -1,6 +1,6 @@
 <?php
 
-namespace camilord\xfpdf\fpdf;
+namespace camilord\xfpdf;
 
 /**
  * This file is part of FPDI

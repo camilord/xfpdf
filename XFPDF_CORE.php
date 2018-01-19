@@ -9,7 +9,7 @@
 namespace camilord\xfpdf;
 
 
-use camilord\xfpdf\fpdf\FPDF_Protection;
+use camilord\xfpdf\FPDF_Protection;
 
 class XFPDF_CORE extends FPDF_Protection
 {
