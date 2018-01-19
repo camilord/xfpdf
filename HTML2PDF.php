@@ -54,6 +54,7 @@ class HTML2PDF extends FPDI
     var $fontList;
     var $issetfont;
     var $issetcolor;
+    VAR $PRE;
 
     function PDF_HTML($orientation='P', $unit='mm', $format='A4')
     {
