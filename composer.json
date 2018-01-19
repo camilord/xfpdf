@@ -21,10 +21,16 @@
   "autoload": {
     "classmap": [
       "filters/",
-      "fpdi.php",
-      "fpdf_tpl.php",
+      "XFPDF_CORE.php",
+      "FPDF_Protection.php",
+      "FPDF.php",
+      "FPDI.php",
+      "HTML2PDF.php",
+      "FPDF_TPL.php",
+      "fpdi_bridge.php",
       "fpdi_pdf_parser.php",
-      "pdf_context.php"
+      "pdf_context.php",
+      "pdf_parser.php"
     ]
   },
   "suggest": {
