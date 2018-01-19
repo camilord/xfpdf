@@ -33,3 +33,5 @@ class myPDF extends XFPDF_CORE {
 }
 
 ```
+
+Full sample codes, see sample.php
