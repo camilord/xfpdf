@@ -9,8 +9,12 @@
 
 namespace camilord\xfpdf;
 
-define('FPDF_VERSION','1.7');
-define('FPDF_FONTPATH', str_replace('//', '/', __DIR__.'/font'));
+if (!defined('FPDF_VERSION')) {
+    define('FPDF_VERSION','1.7');
+}
+if (!defined('FPDF_FONTPATH')) {
+    define('FPDF_FONTPATH', str_replace('//', '/', __DIR__.'/font'));
+}
 
 class FPDF
 {
