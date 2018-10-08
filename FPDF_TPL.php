@@ -76,16 +76,16 @@ class FPDF_TPL extends FPDF
      * @param int $w The width given in user-unit
      * @param int $h The height given in user-unit
      * @return int The id of new created template
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function beginTemplate($x = null, $y = null, $w = null, $h = null)
     {
         if (is_subclass_of($this, 'TCPDF')) {
-            throw new LogicException('This method is only usable with FPDF. Use TCPDF methods startTemplate() instead.');
+            throw new \LogicException('This method is only usable with FPDF. Use TCPDF methods startTemplate() instead.');
         }
 
         if ($this->page <= 0) {
-            throw new LogicException("You have to add at least a page first!");
+            throw new \LogicException("You have to add at least a page first!");
         }
 
         if ($x == null)
@@ -199,16 +199,16 @@ class FPDF_TPL extends FPDF
      * @param int $w The new width of the template
      * @param int $h The new height of the template
      * @return array The height and width of the template (array('w' => ..., 'h' => ...))
-     * @throws LogicException|InvalidArgumentException
+     * @throws \LogicException|\InvalidArgumentException
      */
     public function useTemplate($tplIdx, $x = null, $y = null, $w = 0, $h = 0)
     {
         if ($this->page <= 0) {
-            throw new LogicException('You have to add at least a page first!');
+            throw new \LogicException('You have to add at least a page first!');
         }
 
         if (!isset($this->_tpls[$tplIdx])) {
-            throw new InvalidArgumentException('Template does not exist!');
+            throw new \InvalidArgumentException('Template does not exist!');
         }
 
         if ($this->_inTpl) {
@@ -361,7 +361,7 @@ class FPDF_TPL extends FPDF
         }
 
         if ($this->_inTpl) {
-            throw new LogicException('Adding pages in templates is not possible!');
+            throw new \LogicException('Adding pages in templates is not possible!');
         }
 
         parent::AddPage($orientation, $format);
@@ -383,7 +383,7 @@ class FPDF_TPL extends FPDF
         }
 
         if ($this->_inTpl) {
-            throw new LogicException('Using links in templates is not posible!');
+            throw new \LogicException('Using links in templates is not posible!');
         }
 
         parent::Link($x, $y, $w, $h, $link);
@@ -405,7 +405,7 @@ class FPDF_TPL extends FPDF
         }
 
         if ($this->_inTpl) {
-            throw new LogicException('Adding links in templates is not possible!');
+            throw new \LogicException('Adding links in templates is not possible!');
         }
 
         return parent::AddLink();
@@ -427,7 +427,7 @@ class FPDF_TPL extends FPDF
         }
 
         if ($this->_inTpl) {
-            throw new LogicException('Setting links in templates is not possible!');
+            throw new \LogicException('Setting links in templates is not possible!');
         }
 
         parent::SetLink($link, $y, $page);

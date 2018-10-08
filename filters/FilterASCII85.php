@@ -49,7 +49,7 @@ class FilterASCII85
                 continue;
             }
             if ($ch < $ord['!'] || $ch > $ord['u']) {
-                throw new Exception('Illegal character in ASCII85Decode.');
+                throw new \Exception('Illegal character in ASCII85Decode.');
             }
 
             $chn[$state++] = $ch - $ord['!'];
@@ -70,7 +70,7 @@ class FilterASCII85
         $r = 0;
 
         if ($state == 1) {
-            throw new Exception('Illegal length in ASCII85Decode.');
+            throw new \Exception('Illegal length in ASCII85Decode.');
         }
 
         if ($state == 2) {
