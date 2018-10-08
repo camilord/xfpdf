@@ -189,7 +189,7 @@ class pdf_parser
         $this->getPdfVersion();
 
         if (!class_exists('pdf_context')) {
-            require_once('pdf_context.php');
+            require_once(dirname(__FILE__).'/pdf_context.php');
         }
         $this->_c = new pdf_context($this->_f);
 
