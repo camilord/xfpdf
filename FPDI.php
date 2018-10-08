@@ -119,7 +119,7 @@ class FPDI extends FPDF_TPL
     protected function _getPdfParser($filename)
     {
         if (!class_exists('fpdi_pdf_parser')) {
-            require_once('fpdi_pdf_parser.php');
+            require_once(dirname(__FILE__).'/fpdi_pdf_parser.php');
         }
     	return new fpdi_pdf_parser($filename);
     }
