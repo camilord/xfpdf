@@ -897,21 +897,21 @@ class pdf_parser
                     break;
                 case '/LZWDecode':
                     if (!class_exists('FilterLZW')) {
-                        require_once('filters/FilterLZW.php');
+                        require_once(dirname(__FILE__).'/filters/FilterLZW.php');
                     }
                     $decoder = new \FilterLZW();
                     $stream = $decoder->decode($stream);
                     break;
                 case '/ASCII85Decode':
                     if (!class_exists('FilterASCII85')) {
-                        require_once('filters/FilterASCII85.php');
+                        require_once(dirname(__FILE__).'/filters/FilterASCII85.php');
                     }
                     $decoder = new \FilterASCII85();
                     $stream = $decoder->decode($stream);
                     break;
                 case '/ASCIIHexDecode':
                     if (!class_exists('FilterASCIIHexDecode')) {
-                        require_once('filters/FilterASCIIHexDecode.php');
+                        require_once(dirname(__FILE__).'/filters/FilterASCIIHexDecode.php');
                     }
                     $decoder = new \FilterASCIIHexDecode();
                     $stream = $decoder->decode($stream);
