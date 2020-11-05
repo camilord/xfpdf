@@ -1,6 +1,6 @@
 {
   "name": "camilord/xfpdf",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "homepage": "https://github.com/camilord/xfpdf",
   "description": "Extended FPDF include FPDF, FPDF Protection, HTML2PDF, etc",
   "type": "library",
