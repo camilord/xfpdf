@@ -192,7 +192,7 @@ class XFPDF_CORE extends FPDF_Protection
                     //Tag
                     //if (substr(trim($e),0,1)=='/')
                     //$this->CloseTag(strtoupper(substr($e,strpos($e,'/'))));
-                    if($e{0} == '/') {
+                    if($e[0] == '/') {
                         $this->CloseTag(strtoupper(substr($e, 1)));
                     } else {
                         //Extract attributes
