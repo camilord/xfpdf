@@ -21,98 +21,98 @@ class pdf_parser
      *
      * @var integer
      */
-    const TYPE_NULL = 0;
+    public const TYPE_NULL = 0;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_NUMERIC = 1;
+    public const TYPE_NUMERIC = 1;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_TOKEN = 2;
+    public const TYPE_TOKEN = 2;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_HEX = 3;
+    public const TYPE_HEX = 3;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_STRING = 4;
+    public const TYPE_STRING = 4;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_DICTIONARY = 5;
+    public const TYPE_DICTIONARY = 5;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_ARRAY = 6;
+    public const TYPE_ARRAY = 6;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_OBJDEC = 7;
+    public const TYPE_OBJDEC = 7;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_OBJREF = 8;
+    public const TYPE_OBJREF = 8;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_OBJECT = 9;
+    public const TYPE_OBJECT = 9;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_STREAM = 10;
+    public const TYPE_STREAM = 10;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_BOOLEAN = 11;
+    public const TYPE_BOOLEAN = 11;
 
     /**
      * Type constant
      *
      * @var integer
      */
-    const TYPE_REAL = 12;
+    public const TYPE_REAL = 12;
 
     /**
      * Define the amount of byte in which the initial keyword of a PDF document should be searched.
      *
      * @var int
      */
-    static public $searchForStartxrefLength = 5500;
+    public static $searchForStartxrefLength = 5500;
 
     /**
      * Filename
@@ -245,8 +245,9 @@ class pdf_parser
         if ($this->_pdfVersion === null) {
             fseek($this->_f, 0);
             preg_match('/\d\.\d/', fread($this->_f, 16), $m);
-            if (isset($m[0]))
+            if (isset($m[0])) {
                 $this->_pdfVersion = $m[0];
+            }
         }
 
         return $this->_pdfVersion;
@@ -257,11 +258,12 @@ class pdf_parser
      */
     protected function _readRoot()
     {
-        if ($this->_xref['trailer'][1]['/Root'][0] != self::TYPE_OBJREF) {
+        $root = (is_array($this->_xref['trailer'][1] ?? null) && isset($this->_xref['trailer'][1]['/Root'])) ? $this->_xref['trailer'][1]['/Root'] : null;
+        if (!is_array($root) || !isset($root[0]) || $root[0] != self::TYPE_OBJREF) {
             throw new \Exception('Wrong Type of Root-Element! Must be an indirect reference');
         }
 
-        $this->_root = $this->resolveObject($this->_xref['trailer'][1]['/Root']);
+        $this->_root = $this->resolveObject($root);
     }
 
     /**
@@ -379,16 +381,18 @@ class pdf_parser
             if ($line) {
                 $pieces = explode(' ', $line);
                 $c = count($pieces);
-                switch($c) {
+                switch ($c) {
                     case 2:
                         $start = (int)$pieces[0];
                         $end   = $start + (int)$pieces[1];
-                        if ($end > $result['maxObject'])
+                        if ($end > $result['maxObject']) {
                             $result['maxObject'] = $end;
+                        }
                         break;
                     case 3:
-                        if (!isset($result['xref'][$start]))
+                        if (!isset($result['xref'][$start])) {
                             $result['xref'][$start] = array();
+                        }
 
                         if (!array_key_exists($gen = (int) $pieces[1], $result['xref'][$start])) {
                             $result['xref'][$start][$gen] = $pieces[2] == 'n' ? (int) $pieces[0] : null;
@@ -411,7 +415,7 @@ class pdf_parser
             $result['trailer'] = $trailer;
         }
 
-        if (isset($trailer[1]['/Prev'])) {
+        if (isset($trailer[1]['/Prev']) && is_array($trailer[1]['/Prev']) && isset($trailer[1]['/Prev'][1])) {
             $this->_readXref($result, $trailer[1]['/Prev'][1]);
         }
 
@@ -446,7 +450,7 @@ class pdf_parser
 
                 $pos = $c->offset;
 
-                while(1) {
+                while (1) {
 
                     $match = strpos($c->buffer, '>', $pos);
 
@@ -464,7 +468,7 @@ class pdf_parser
                     $result = substr($c->buffer, $c->offset, $match - $c->offset);
                     $c->offset = $match + 1;
 
-                    return array (self::TYPE_HEX, $result);
+                    return array(self::TYPE_HEX, $result);
                 }
                 break;
 
@@ -493,7 +497,7 @@ class pdf_parser
                     $result[$key] = $value;
                 }
 
-                return array (self::TYPE_DICTIONARY, $result);
+                return array(self::TYPE_DICTIONARY, $result);
 
             case '[':
                 // This is an array.
@@ -514,7 +518,7 @@ class pdf_parser
                     $result[] = $value;
                 }
 
-                return array (self::TYPE_ARRAY, $result);
+                return array(self::TYPE_ARRAY, $result);
 
             case '(':
                 // This is a string
@@ -534,12 +538,12 @@ class pdf_parser
                                 $pos++;
                         }
                     }
-                } while($openBrackets != 0 && $c->increaseLength());
+                } while ($openBrackets != 0 && $c->increaseLength());
 
                 $result = substr($c->buffer, $c->offset, $pos - $c->offset - 1);
                 $c->offset = $pos;
 
-                return array (self::TYPE_STRING, $result);
+                return array(self::TYPE_STRING, $result);
 
             case 'stream':
                 $tempPos = $c->getPos() - strlen($c->buffer);
@@ -558,16 +562,19 @@ class pdf_parser
                 }
 
                 $e = 0; // ensure line breaks in front of the stream
-                if ($c->buffer[0] == chr(10) || $c->buffer[0] == chr(13))
+                if ($c->buffer[0] == chr(10) || $c->buffer[0] == chr(13)) {
                     $e++;
-                if ($c->buffer[1] == chr(10) && $c->buffer[0] != chr(10))
+                }
+                if ($c->buffer[1] == chr(10) && $c->buffer[0] != chr(10)) {
                     $e++;
+                }
 
-                if ($this->_currentObj[1][1]['/Length'][0] == self::TYPE_OBJREF) {
-                    $tmpLength = $this->resolveObject($this->_currentObj[1][1]['/Length']);
-                    $length = $tmpLength[1][1];
+                $lengthSpec = (is_array($this->_currentObj[1][1] ?? null) && isset($this->_currentObj[1][1]['/Length'])) ? $this->_currentObj[1][1]['/Length'] : null;
+                if (is_array($lengthSpec) && isset($lengthSpec[0]) && $lengthSpec[0] == self::TYPE_OBJREF) {
+                    $tmpLength = $this->resolveObject($lengthSpec);
+                    $length = (is_array($tmpLength) && isset($tmpLength[1][1])) ? $tmpLength[1][1] : 0;
                 } else {
-                    $length = $this->_currentObj[1][1]['/Length'][1];
+                    $length = (is_array($lengthSpec) && isset($lengthSpec[1])) ? $lengthSpec[1] : 0;
                 }
 
                 if ($length > 0) {
@@ -588,7 +595,7 @@ class pdf_parser
 
                 return array(self::TYPE_STREAM, $v);
 
-            default	:
+            default:
                 if (is_numeric($token)) {
                     // A numeric token. Make sure that
                     // it is not part of something else.
@@ -617,19 +624,20 @@ class pdf_parser
                         array_push($c->stack, $tok2);
                     }
 
-                    if ($token === (string)((int)$token))
+                    if ($token === (string)((int)$token)) {
                         return array(self::TYPE_NUMERIC, (int)$token);
-                    else
+                    } else {
                         return array(self::TYPE_REAL, (float)$token);
-                } else if ($token == 'true' || $token == 'false') {
+                    }
+                } elseif ($token == 'true' || $token == 'false') {
                     return array(self::TYPE_BOOLEAN, $token == 'true');
-                } else if ($token == 'null') {
-                   return array(self::TYPE_NULL);
+                } elseif ($token == 'null') {
+                    return array(self::TYPE_NULL);
                 } else {
                     // Just a token. Return it.
                     return array(self::TYPE_TOKEN, $token);
                 }
-         }
+        }
     }
 
     /**
@@ -668,7 +676,7 @@ class pdf_parser
 
                 $header = $this->_readValue($c);
 
-                if ($header[0] != self::TYPE_OBJDEC || $header[1] != $objSpec[1] || $header[2] != $objSpec[2]) {
+                if (!is_array($header) || !isset($header[0], $header[1], $header[2]) || $header[0] != self::TYPE_OBJDEC || $header[1] != $objSpec[1] || $header[2] != $objSpec[2]) {
                     $toSearchFor = $objSpec[1] . ' ' . $objSpec[2] . ' obj';
                     if (preg_match('/' . $toSearchFor . '/', $c->buffer)) {
                         $c->offset = strpos($c->buffer, $toSearchFor) + strlen($toSearchFor);
@@ -684,13 +692,13 @@ class pdf_parser
                 // If we're being asked to store all the information
                 // about the object, we add the object ID and generation
                 // number for later use
-                $result = array (
+                $result = array(
                     self::TYPE_OBJECT,
                     'obj' => $objSpec[1],
                     'gen' => $objSpec[2]
                 );
 
-                $this->_currentObj =& $result;
+                $this->_currentObj = & $result;
 
                 // Now simply read the object data until
                 // we encounter an end-of-object marker
@@ -710,7 +718,7 @@ class pdf_parser
 
                 $c->reset($oldPos);
 
-                if (isset($result[2][0]) && $result[2][0] == self::TYPE_STREAM) {
+                if (isset($result[2]) && is_array($result[2]) && isset($result[2][0]) && $result[2][0] == self::TYPE_STREAM) {
                     $result[0] = self::TYPE_STREAM;
                 }
 
@@ -784,12 +792,13 @@ class pdf_parser
                     return $char;
                 }
 
+                // no break
             case '%':
 
                 // This is a comment - jump over it!
 
                 $pos = $c->offset;
-                while(1) {
+                while (1) {
                     $match = preg_match("/(\r\n|\r|\n)/", $c->buffer, $m, PREG_OFFSET_CAPTURE, $pos);
                     if ($match === 0) {
                         if (!$c->increaseLength()) {
@@ -804,6 +813,7 @@ class pdf_parser
                     return $this->_readToken($c);
                 }
 
+                // no break
             default:
 
                 // This is "another" type of token (probably
@@ -814,7 +824,7 @@ class pdf_parser
                     return false;
                 }
 
-                while(1) {
+                while (1) {
 
                     // Determine the length of the token
 
@@ -855,21 +865,26 @@ class pdf_parser
         if (isset($obj[1][1]['/Filter'])) {
             $filter = $obj[1][1]['/Filter'];
 
-            if ($filter[0] == pdf_parser::TYPE_OBJREF) {
+            if (is_array($filter) && isset($filter[0]) && $filter[0] == pdf_parser::TYPE_OBJREF) {
                 $tmpFilter = $this->resolveObject($filter);
-                $filter = $tmpFilter[1];
+                if (is_array($tmpFilter) && isset($tmpFilter[1])) {
+                    $filter = $tmpFilter[1];
+                }
             }
 
-            if ($filter[0] == pdf_parser::TYPE_TOKEN) {
+            if (is_array($filter) && isset($filter[0]) && $filter[0] == pdf_parser::TYPE_TOKEN) {
                 $filters[] = $filter;
-            } else if ($filter[0] == pdf_parser::TYPE_ARRAY) {
+            } elseif (is_array($filter) && isset($filter[0]) && $filter[0] == pdf_parser::TYPE_ARRAY && isset($filter[1]) && is_array($filter[1])) {
                 $filters = $filter[1];
             }
         }
 
-        $stream = $obj[2][1];
+        $stream = (is_array($obj) && isset($obj[2][1])) ? $obj[2][1] : '';
 
-        foreach ($filters AS $filter) {
+        foreach ($filters as $filter) {
+            if (!is_array($filter) || !isset($filter[1])) {
+                continue;
+            }
             switch ($filter[1]) {
                 case '/FlateDecode':
                 case '/Fl':

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of FPDI
  *
@@ -50,7 +51,7 @@ class FPDF_TPL extends FPDF
      *
      * @var array
      */
-    protected  $_res = array();
+    protected $_res = array();
 
     /**
      * Last used template data
@@ -88,18 +89,22 @@ class FPDF_TPL extends FPDF
             throw new \LogicException("You have to add at least a page first!");
         }
 
-        if ($x == null)
+        if ($x == null) {
             $x = 0;
-        if ($y == null)
+        }
+        if ($y == null) {
             $y = 0;
-        if ($w == null)
+        }
+        if ($w == null) {
             $w = $this->w;
-        if ($h == null)
+        }
+        if ($h == null) {
             $h = $this->h;
+        }
 
         // Save settings
         $this->tpl++;
-        $tpl =& $this->_tpls[$this->tpl];
+        $tpl = & $this->_tpls[$this->tpl];
         $tpl = array(
             'o_x' => $this->x,
             'o_y' => $this->y,
@@ -134,7 +139,7 @@ class FPDF_TPL extends FPDF
         if ($this->CurrentFont) {
             $fontKey = $this->FontFamily . $this->FontStyle;
             if ($fontKey) {
-                $this->_res['tpl'][$this->tpl]['fonts'][$fontKey] =& $this->fonts[$fontKey];
+                $this->_res['tpl'][$this->tpl]['fonts'][$fontKey] = & $this->fonts[$fontKey];
                 $this->_out(sprintf('BT /F%d %.2F Tf ET', $this->CurrentFont['i'], $this->FontSizePt));
             }
         }
@@ -173,8 +178,9 @@ class FPDF_TPL extends FPDF
             $this->FontSize = $tpl['o_FontSize'];
 
             $fontKey = $this->FontFamily . $this->FontStyle;
-            if ($fontKey)
-                $this->CurrentFont =& $this->fonts[$fontKey];
+            if ($fontKey) {
+                $this->CurrentFont = & $this->fonts[$fontKey];
+            }
 
             return $this->tpl;
         } else {
@@ -212,7 +218,7 @@ class FPDF_TPL extends FPDF
         }
 
         if ($this->_inTpl) {
-            $this->_res['tpl'][$this->tpl]['tpls'][$tplIdx] =& $this->_tpls[$tplIdx];
+            $this->_res['tpl'][$this->tpl]['tpls'][$tplIdx] = & $this->_tpls[$tplIdx];
         }
 
         $tpl = $this->_tpls[$tplIdx];
@@ -246,8 +252,14 @@ class FPDF_TPL extends FPDF
             'lty' => ($this->h - $y - $h) - ($this->h - $_h) * ($h / $_h)
         );
 
-        $this->_out(sprintf('q %.4F 0 0 %.4F %.4F %.4F cm',
-                $tplData['scaleX'], $tplData['scaleY'], $tplData['tx'] * $this->k, $tplData['ty'] * $this->k)
+        $this->_out(
+            sprintf(
+                'q %.4F 0 0 %.4F %.4F %.4F cm',
+                $tplData['scaleX'],
+                $tplData['scaleY'],
+                $tplData['tx'] * $this->k,
+                $tplData['ty'] * $this->k
+            )
         ); // Translate
         $this->_out(sprintf('%s%d Do Q', $this->tplPrefix, $tplIdx));
 
@@ -268,8 +280,9 @@ class FPDF_TPL extends FPDF
      */
     public function getTemplateSize($tplIdx, $w = 0, $h = 0)
     {
-        if (!isset($this->_tpls[$tplIdx]))
+        if (!isset($this->_tpls[$tplIdx])) {
             return false;
+        }
 
         $tpl = $this->_tpls[$tplIdx];
         $_w = $tpl['w'];
@@ -280,10 +293,12 @@ class FPDF_TPL extends FPDF
             $h = $_h;
         }
 
-        if ($w == 0)
+        if ($w == 0) {
             $w = $h * $_w / $_h;
-        if($h == 0)
+        }
+        if ($h == 0) {
             $h = $w * $_h / $_w;
+        }
 
         return array("w" => $w, "h" => $h);
     }
@@ -308,9 +323,9 @@ class FPDF_TPL extends FPDF
         $fontkey = $this->FontFamily . $this->FontStyle;
 
         if ($this->_inTpl) {
-            $this->_res['tpl'][$this->tpl]['fonts'][$fontkey] =& $this->fonts[$fontkey];
+            $this->_res['tpl'][$this->tpl]['fonts'][$fontkey] = & $this->fonts[$fontkey];
         } else {
-            $this->_res['page'][$this->page]['fonts'][$fontkey] =& $this->fonts[$fontkey];
+            $this->_res['page'][$this->page]['fonts'][$fontkey] = & $this->fonts[$fontkey];
         }
     }
 
@@ -323,11 +338,26 @@ class FPDF_TPL extends FPDF
      * @see http://www.tcpdf.org/doc/code/classTCPDF.html#a714c2bee7d6b39d4d6d304540c761352
      */
     public function Image(
-        $file, $x = '', $y = '', $w = 0, $h = 0, $type = '', $link = '', $align = '', $resize = false,
-        $dpi = 300, $palign = '', $ismask = false, $imgmask = false, $border = 0, $fitbox = false,
-        $hidden = false, $fitonpage = false, $alt = false, $altimgs = array()
-    )
-    {
+        $file,
+        $x = '',
+        $y = '',
+        $w = 0,
+        $h = 0,
+        $type = '',
+        $link = '',
+        $align = '',
+        $resize = false,
+        $dpi = 300,
+        $palign = '',
+        $ismask = false,
+        $imgmask = false,
+        $border = 0,
+        $fitbox = false,
+        $hidden = false,
+        $fitonpage = false,
+        $alt = false,
+        $altimgs = array()
+    ) {
         if (is_subclass_of($this, 'TCPDF')) {
             $args = func_get_args();
             return call_user_func_array(array($this, 'TCPDF::Image'), $args);
@@ -335,9 +365,9 @@ class FPDF_TPL extends FPDF
 
         $ret = parent::Image($file, $x, $y, $w, $h, $type, $link);
         if ($this->_inTpl) {
-            $this->_res['tpl'][$this->tpl]['images'][$file] =& $this->images[$file];
+            $this->_res['tpl'][$this->tpl]['images'][$file] = & $this->images[$file];
         } else {
-            $this->_res['page'][$this->page]['images'][$file] =& $this->images[$file];
+            $this->_res['page'][$this->page]['images'][$file] = & $this->images[$file];
         }
 
         return $ret;
@@ -438,16 +468,17 @@ class FPDF_TPL extends FPDF
      */
     protected function _putformxobjects()
     {
-        $filter=($this->compress) ? '/Filter /FlateDecode ' : '';
+        $filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
         reset($this->_tpls);
 
-        foreach($this->_tpls AS $tplIdx => $tpl) {
+        foreach ($this->_tpls as $tplIdx => $tpl) {
             $this->_newobj();
             $this->_tpls[$tplIdx]['n'] = $this->n;
             $this->_out('<<'.$filter.'/Type /XObject');
             $this->_out('/Subtype /Form');
             $this->_out('/FormType 1');
-            $this->_out(sprintf('/BBox [%.2F %.2F %.2F %.2F]',
+            $this->_out(sprintf(
+                '/BBox [%.2F %.2F %.2F %.2F]',
                 // llx
                 $tpl['x'] * $this->k,
                 // lly
@@ -459,8 +490,10 @@ class FPDF_TPL extends FPDF
             ));
 
             if ($tpl['x'] != 0 || $tpl['y'] != 0) {
-                $this->_out(sprintf('/Matrix [1 0 0 1 %.5F %.5F]',
-                    -$tpl['x'] * $this->k * 2, $tpl['y'] * $this->k * 2
+                $this->_out(sprintf(
+                    '/Matrix [1 0 0 1 %.5F %.5F]',
+                    -$tpl['x'] * $this->k * 2,
+                    $tpl['y'] * $this->k * 2
                 ));
             }
 
@@ -472,24 +505,26 @@ class FPDF_TPL extends FPDF
                 if (isset($res['fonts']) && count($res['fonts'])) {
                     $this->_out('/Font <<');
 
-                    foreach($res['fonts'] as $font) {
+                    foreach (($res['fonts'] ?? []) as $font) {
                         $this->_out('/F' . $font['i'] . ' ' . $font['n'] . ' 0 R');
                     }
 
                     $this->_out('>>');
                 }
 
-                if(isset($res['images']) || isset($res['tpls'])) {
+                if (isset($res['images']) || isset($res['tpls'])) {
                     $this->_out('/XObject <<');
 
                     if (isset($res['images'])) {
-                        foreach($res['images'] as $image)
+                        foreach (($res['images'] ?? []) as $image) {
                             $this->_out('/I' . $image['i'] . ' ' . $image['n'] . ' 0 R');
+                        }
                     }
 
                     if (isset($res['tpls'])) {
-                        foreach($res['tpls'] as $i => $_tpl)
+                        foreach (($res['tpls'] ?? []) as $i => $_tpl) {
                             $this->_out($this->tplPrefix . $i . ' ' . $_tpl['n'] . ' 0 R');
+                        }
                     }
 
                     $this->_out('>>');
@@ -525,7 +560,7 @@ class FPDF_TPL extends FPDF
     {
         parent::_putxobjectdict();
 
-        foreach($this->_tpls as $tplIdx => $tpl) {
+        foreach ($this->_tpls as $tplIdx => $tpl) {
             $this->_out(sprintf('%s%d %d 0 R', $this->tplPrefix, $tplIdx, $tpl['n']));
         }
     }

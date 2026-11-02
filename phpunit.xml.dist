@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+         bootstrap="tests/bootstrap.php"
+         colors="true">
+    <testsuites>
+        <testsuite name="xfpdf">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">./</directory>
+        </include>
+        <exclude>
+            <directory>./tests</directory>
+            <directory>./vendor</directory>
+            <directory>./doc</directory>
+            <directory>./font</directory>
+            <directory>./makefont</directory>
+            <directory>./tutorial</directory>
+            <file>.php-cs-fixer.dist.php</file>
+            <file>index.php</file>
+            <file>sample.php</file>
+            <file>fpdi_bridge.php</file>
+        </exclude>
+    </coverage>
+</phpunit>
