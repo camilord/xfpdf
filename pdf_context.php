@@ -56,9 +56,10 @@ class pdf_context
      */
     public function __construct(&$f)
     {
-        $this->file =& $f;
-        if (is_string($this->file))
+        $this->file = & $f;
+        if (is_string($this->file)) {
             $this->_mode = 1;
+        }
 
         $this->reset();
     }
@@ -89,13 +90,14 @@ class pdf_context
     {
         if ($this->_mode == 0) {
             if (!is_null($pos)) {
-                fseek ($this->file, $pos);
+                fseek($this->file, $pos);
             }
 
             $this->buffer = $l > 0 ? fread($this->file, $l) : '';
             $this->length = strlen($this->buffer);
-            if ($this->length < $l)
+            if ($this->length < $l) {
                 $this->increaseLength($l - $this->length);
+            }
         } else {
             $this->buffer = $this->file;
             $this->length = strlen($this->buffer);
@@ -130,12 +132,13 @@ class pdf_context
     {
         if ($this->_mode == 0 && feof($this->file)) {
             return false;
-        } else if ($this->_mode == 0) {
+        } elseif ($this->_mode == 0) {
             $totalLength = $this->length + $l;
             do {
                 $toRead = $totalLength - $this->length;
-                if ($toRead < 1)
+                if ($toRead < 1) {
                     break;
+                }
 
                 $this->buffer .= fread($this->file, $toRead);
             } while ((($this->length = strlen($this->buffer)) != $totalLength) && !feof($this->file));

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of FPDI
  *
@@ -12,7 +13,6 @@ namespace camilord\xfpdf;
 
 use camilord\xfpdf\FPDF_TPL;
 
-
 /**
  * Class FPDI
  */
@@ -23,7 +23,7 @@ class FPDI extends FPDF_TPL
      *
      * @string
      */
-    const VERSION = '1.6.0';
+    public const VERSION = '1.6.0';
 
     /**
      * Actual filename
@@ -38,7 +38,7 @@ class FPDI extends FPDF_TPL
      * @var fpdi_pdf_parser[]
      */
     public $parsers = array();
-    
+
     /**
      * Current parser
      *
@@ -59,7 +59,7 @@ class FPDI extends FPDF_TPL
      * @var array
      */
     protected $_objStack;
-    
+
     /**
      * Done object stack
      *
@@ -73,14 +73,14 @@ class FPDI extends FPDF_TPL
      * @var integer
      */
     protected $_currentObjId;
-    
+
     /**
      * Cache for imported pages/template ids
      *
      * @var array
      */
     protected $_importedPages = array();
-    
+
     /**
      * Set a source-file.
      *
@@ -93,11 +93,12 @@ class FPDI extends FPDF_TPL
     public function setSourceFile($filename)
     {
         $_filename = realpath($filename);
-        if (false !== $_filename)
+        if (false !== $_filename) {
             $filename = $_filename;
+        }
 
         $this->currentFilename = $filename;
-        
+
         if (!isset($this->parsers[$filename])) {
             $this->parsers[$filename] = $this->_getPdfParser($filename);
             $this->setPdfVersion(
@@ -106,10 +107,10 @@ class FPDI extends FPDF_TPL
         }
 
         $this->currentParser = $this->parsers[$filename];
-        
+
         return $this->parsers[$filename]->getPageCount();
     }
-    
+
     /**
      * Returns a PDF parser object
      *
@@ -121,9 +122,9 @@ class FPDI extends FPDF_TPL
         if (!class_exists('fpdi_pdf_parser')) {
             require_once(dirname(__FILE__).'/fpdi_pdf_parser.php');
         }
-    	return new fpdi_pdf_parser($filename);
+        return new fpdi_pdf_parser($filename);
     }
-    
+
     /**
      * Get the current PDF version.
      *
@@ -131,9 +132,9 @@ class FPDI extends FPDF_TPL
      */
     public function getPdfVersion()
     {
-		return $this->PDFVersion;
-	}
-    
+        return $this->PDFVersion;
+    }
+
     /**
      * Set the PDF version.
      *
@@ -143,7 +144,7 @@ class FPDI extends FPDF_TPL
     {
         $this->PDFVersion = sprintf('%.1F', $version);
     }
-	
+
     /**
      * Import a page.
      *
@@ -174,7 +175,7 @@ class FPDI extends FPDF_TPL
         if ($this->_inTpl) {
             throw new LogicException('Please import the desired pages before creating a new template.');
         }
-        
+
         $fn = $this->currentFilename;
         $boxName = '/' . ltrim($boxName, '/');
 
@@ -183,16 +184,16 @@ class FPDI extends FPDF_TPL
         if (isset($this->_importedPages[$pageKey])) {
             return $this->_importedPages[$pageKey];
         }
-        
+
         $parser = $this->parsers[$fn];
         $parser->setPageNo($pageNo);
 
         if (!in_array($boxName, $parser->availableBoxes)) {
             throw new InvalidArgumentException(sprintf('Unknown box: %s', $boxName));
         }
-            
+
         $pageBoxes = $parser->getPageBoxes($pageNo, $this->k);
-        
+
         /**
          * MediaBox
          * CropBox: Default -> MediaBox
@@ -200,21 +201,24 @@ class FPDI extends FPDF_TPL
          * TrimBox: Default -> CropBox
          * ArtBox: Default -> CropBox
          */
-        if (!isset($pageBoxes[$boxName]) && ($boxName == '/BleedBox' || $boxName == '/TrimBox' || $boxName == '/ArtBox'))
+        if (!isset($pageBoxes[$boxName]) && ($boxName == '/BleedBox' || $boxName == '/TrimBox' || $boxName == '/ArtBox')) {
             $boxName = '/CropBox';
-        if (!isset($pageBoxes[$boxName]) && $boxName == '/CropBox')
+        }
+        if (!isset($pageBoxes[$boxName]) && $boxName == '/CropBox') {
             $boxName = '/MediaBox';
-        
-        if (!isset($pageBoxes[$boxName]))
+        }
+
+        if (!isset($pageBoxes[$boxName])) {
             return false;
-            
+        }
+
         $this->lastUsedPageBox = $boxName;
-        
+
         $box = $pageBoxes[$boxName];
-        
+
         $this->tpl++;
         $this->_tpls[$this->tpl] = array();
-        $tpl =& $this->_tpls[$this->tpl];
+        $tpl = & $this->_tpls[$this->tpl];
         $tpl['parser'] = $parser;
         $tpl['resources'] = $parser->getPageResources();
         $tpl['buffer'] = $parser->getContent();
@@ -226,33 +230,34 @@ class FPDI extends FPDF_TPL
 
         // To build an array that can be used by PDF_TPL::useTemplate()
         $this->_tpls[$this->tpl] = array_merge($this->_tpls[$this->tpl], $box);
-        
+
         // An imported page will start at 0,0 all the time. Translation will be set in _putformxobjects()
         $tpl['x'] = 0;
         $tpl['y'] = 0;
-        
+
         // handle rotated pages
         $rotation = $parser->getPageRotation($pageNo);
         $tpl['_rotationAngle'] = 0;
         if (isset($rotation[1]) && ($angle = $rotation[1] % 360) != 0) {
-        	$steps = $angle / 90;
-                
+            $steps = $angle / 90;
+
             $_w = $tpl['w'];
             $_h = $tpl['h'];
             $tpl['w'] = $steps % 2 == 0 ? $_w : $_h;
             $tpl['h'] = $steps % 2 == 0 ? $_h : $_w;
-            
-            if ($angle < 0)
-            	$angle += 360;
-            
-        	$tpl['_rotationAngle'] = $angle * -1;
+
+            if ($angle < 0) {
+                $angle += 360;
+            }
+
+            $tpl['_rotationAngle'] = $angle * -1;
         }
-        
+
         $this->_importedPages[$pageKey] = $this->tpl;
-        
+
         return $this->tpl;
     }
-    
+
     /**
      * Returns the last used page boundary box.
      *
@@ -291,52 +296,52 @@ class FPDI extends FPDF_TPL
             $size = $this->getTemplateSize($tplIdx, $w, $h);
             $orientation = $size['w'] > $size['h'] ? 'L' : 'P';
             $size = array($size['w'], $size['h']);
-            
+
             if (is_subclass_of($this, 'TCPDF')) {
-            	$this->setPageFormat($size, $orientation);
+                $this->setPageFormat($size, $orientation);
             } else {
-            	$size = $this->_getpagesize($size);
-            	
-            	if($orientation != $this->CurOrientation ||
+                $size = $this->_getpagesize($size);
+
+                if ($orientation != $this->CurOrientation ||
                     $size[0] != $this->CurPageSize[0] ||
                     $size[1] != $this->CurPageSize[1]
                 ) {
-					// New size or orientation
-					if ($orientation=='P') {
-						$this->w = $size[0];
-						$this->h = $size[1];
-					} else {
-						$this->w = $size[1];
-						$this->h = $size[0];
-					}
-					$this->wPt = $this->w * $this->k;
-					$this->hPt = $this->h * $this->k;
-					$this->PageBreakTrigger = $this->h - $this->bMargin;
-					$this->CurOrientation = $orientation;
-					$this->CurPageSize = $size;
-					$this->PageSizes[$this->page] = array($this->wPt, $this->hPt);
-				}
-            } 
+                    // New size or orientation
+                    if ($orientation == 'P') {
+                        $this->w = $size[0];
+                        $this->h = $size[1];
+                    } else {
+                        $this->w = $size[1];
+                        $this->h = $size[0];
+                    }
+                    $this->wPt = $this->w * $this->k;
+                    $this->hPt = $this->h * $this->k;
+                    $this->PageBreakTrigger = $this->h - $this->bMargin;
+                    $this->CurOrientation = $orientation;
+                    $this->CurPageSize = $size;
+                    $this->PageSizes[$this->page] = array($this->wPt, $this->hPt);
+                }
+            }
         }
-        
+
         $this->_out('q 0 J 1 w 0 j 0 G 0 g'); // reset standard values
         $size = parent::useTemplate($tplIdx, $x, $y, $w, $h);
         $this->_out('Q');
-        
+
         return $size;
     }
-    
+
     /**
      * Copy all imported objects to the resulting document.
      */
     protected function _putimportedobjects()
     {
-        foreach($this->parsers AS $filename => $p) {
+        foreach ($this->parsers as $filename => $p) {
             $this->currentParser = $p;
             if (!isset($this->_objStack[$filename]) || !is_array($this->_objStack[$filename])) {
                 continue;
             }
-            while(($n = key($this->_objStack[$filename])) !== null) {
+            while (($n = key($this->_objStack[$filename])) !== null) {
                 try {
                     $nObj = $this->currentParser->resolveObject($this->_objStack[$filename][$n][1]);
                 } catch (Exception $e) {
@@ -345,9 +350,9 @@ class FPDI extends FPDF_TPL
 
                 $this->_newobj($this->_objStack[$filename][$n][0]);
 
-                if ($nObj[0] == pdf_parser::TYPE_STREAM) {
+                if (is_array($nObj) && isset($nObj[0]) && $nObj[0] == pdf_parser::TYPE_STREAM) {
                     $this->_writeValue($nObj);
-                } else {
+                } elseif (is_array($nObj) && isset($nObj[1])) {
                     $this->_writeValue($nObj[1]);
                 }
 
@@ -365,66 +370,73 @@ class FPDI extends FPDF_TPL
     protected function _putformxobjects()
     {
         $filter = ($this->compress) ? '/Filter /FlateDecode ' : '';
-	    reset($this->_tpls);
-        foreach($this->_tpls AS $tplIdx => $tpl) {
+        reset($this->_tpls);
+        foreach ($this->_tpls as $tplIdx => $tpl) {
             $this->_newobj();
-    		$currentN = $this->n; // TCPDF/Protection: rem current "n"
-    		
-    		$this->_tpls[$tplIdx]['n'] = $this->n;
-    		$this->_out('<<' . $filter . '/Type /XObject');
+            $currentN = $this->n; // TCPDF/Protection: rem current "n"
+
+            $this->_tpls[$tplIdx]['n'] = $this->n;
+            $this->_out('<<' . $filter . '/Type /XObject');
             $this->_out('/Subtype /Form');
             $this->_out('/FormType 1');
-            
-            $this->_out(sprintf('/BBox [%.2F %.2F %.2F %.2F]', 
+
+            $this->_out(sprintf(
+                '/BBox [%.2F %.2F %.2F %.2F]',
                 (isset($tpl['box']['llx']) ? $tpl['box']['llx'] : $tpl['x']) * $this->k,
                 (isset($tpl['box']['lly']) ? $tpl['box']['lly'] : -$tpl['y']) * $this->k,
                 (isset($tpl['box']['urx']) ? $tpl['box']['urx'] : $tpl['w'] + $tpl['x']) * $this->k,
                 (isset($tpl['box']['ury']) ? $tpl['box']['ury'] : $tpl['h'] - $tpl['y']) * $this->k
             ));
-            
+
             $c = 1;
             $s = 0;
             $tx = 0;
             $ty = 0;
-            
+
             if (isset($tpl['box'])) {
                 $tx = -$tpl['box']['llx'];
-                $ty = -$tpl['box']['lly']; 
-                
+                $ty = -$tpl['box']['lly'];
+
                 if ($tpl['_rotationAngle'] <> 0) {
-                    $angle = $tpl['_rotationAngle'] * M_PI/180;
+                    $angle = $tpl['_rotationAngle'] * M_PI / 180;
                     $c = cos($angle);
                     $s = sin($angle);
-                    
-                    switch($tpl['_rotationAngle']) {
+
+                    switch ($tpl['_rotationAngle']) {
                         case -90:
-                           $tx = -$tpl['box']['lly'];
-                           $ty = $tpl['box']['urx'];
-                           break;
+                            $tx = -$tpl['box']['lly'];
+                            $ty = $tpl['box']['urx'];
+                            break;
                         case -180:
                             $tx = $tpl['box']['urx'];
                             $ty = $tpl['box']['ury'];
                             break;
                         case -270:
-                        	$tx = $tpl['box']['ury'];
+                            $tx = $tpl['box']['ury'];
                             $ty = -$tpl['box']['llx'];
                             break;
                     }
                 }
-            } else if ($tpl['x'] != 0 || $tpl['y'] != 0) {
+            } elseif ($tpl['x'] != 0 || $tpl['y'] != 0) {
                 $tx = -$tpl['x'] * 2;
                 $ty = $tpl['y'] * 2;
             }
-            
+
             $tx *= $this->k;
             $ty *= $this->k;
-            
+
             if ($c != 1 || $s != 0 || $tx != 0 || $ty != 0) {
-                $this->_out(sprintf('/Matrix [%.5F %.5F %.5F %.5F %.5F %.5F]',
-                    $c, $s, -$s, $c, $tx, $ty
+                $this->_out(sprintf(
+                    '/Matrix [%.5F %.5F %.5F %.5F %.5F %.5F]',
+                    $c,
+                    $s,
+                    -$s,
+                    $c,
+                    $tx,
+                    $ty
                 ));
             }
-            
+
             $this->_out('/Resources ');
 
             if (isset($tpl['resources'])) {
@@ -438,21 +450,23 @@ class FPDI extends FPDF_TPL
 
                     if (isset($res['fonts']) && count($res['fonts'])) {
                         $this->_out('/Font <<');
-                        foreach ($res['fonts'] as $font)
+                        foreach (($res['fonts'] ?? []) as $font) {
                             $this->_out('/F' . $font['i'] . ' ' . $font['n'] . ' 0 R');
+                        }
                         $this->_out('>>');
                     }
                     if (isset($res['images']) && count($res['images']) ||
-                       isset($res['tpls']) && count($res['tpls']))
-                    {
+                       isset($res['tpls']) && count($res['tpls'])) {
                         $this->_out('/XObject <<');
                         if (isset($res['images'])) {
-                            foreach ($res['images'] as $image)
+                            foreach (($res['images'] ?? []) as $image) {
                                 $this->_out('/I' . $image['i'] . ' ' . $image['n'] . ' 0 R');
+                            }
                         }
                         if (isset($res['tpls'])) {
-                            foreach ($res['tpls'] as $i => $_tpl)
+                            foreach (($res['tpls'] ?? []) as $i => $_tpl) {
                                 $this->_out($this->tplPrefix . $i . ' ' . $_tpl['n'] . ' 0 R');
+                            }
                         }
                         $this->_out('>>');
                     }
@@ -470,17 +484,17 @@ class FPDI extends FPDF_TPL
             $buffer = ($this->compress) ? gzcompress($tpl['buffer']) : $tpl['buffer'];
 
             if (is_subclass_of($this, 'TCPDF')) {
-            	$buffer = $this->_getrawstream($buffer);
-            	$this->_out('/Length ' . strlen($buffer) . ' >>');
-            	$this->_out("stream\n" . $buffer . "\nendstream");
+                $buffer = $this->_getrawstream($buffer);
+                $this->_out('/Length ' . strlen($buffer) . ' >>');
+                $this->_out("stream\n" . $buffer . "\nendstream");
             } else {
-	            $this->_out('/Length ' . strlen($buffer) . ' >>');
-	    		$this->_putstream($buffer);
+                $this->_out('/Length ' . strlen($buffer) . ' >>');
+                $this->_putstream($buffer);
             }
-    		$this->_out('endobj');
-    		$this->n = $newN; // TCPDF: reset to new "n"
+            $this->_out('endobj');
+            $this->n = $newN; // TCPDF: reset to new "n"
         }
-        
+
         $this->_putimportedobjects();
     }
 
@@ -505,7 +519,7 @@ class FPDI extends FPDF_TPL
             $this->_out($objId . ' 0 obj');
             $this->_currentObjId = $objId; // for later use with encryption
         }
-        
+
         return $objId;
     }
 
@@ -518,103 +532,123 @@ class FPDI extends FPDF_TPL
      */
     protected function _writeValue(&$value)
     {
+        if (!is_array($value)) {
+            return;
+        }
+
         if (is_subclass_of($this, 'TCPDF')) {
             parent::_prepareValue($value);
         }
-        
+
+        if (!isset($value[0])) {
+            return;
+        }
+
         switch ($value[0]) {
 
-    		case pdf_parser::TYPE_TOKEN:
+            case pdf_parser::TYPE_TOKEN:
                 $this->_straightOut($value[1] . ' ');
-    			break;
-		    case pdf_parser::TYPE_NUMERIC:
-    		case pdf_parser::TYPE_REAL:
+                break;
+            case pdf_parser::TYPE_NUMERIC:
+            case pdf_parser::TYPE_REAL:
                 if (is_float($value[1]) && $value[1] != 0) {
-    			    $this->_straightOut(rtrim(rtrim(sprintf('%F', $value[1]), '0'), '.') . ' ');
-    			} else {
-        			$this->_straightOut($value[1] . ' ');
-    			}
-    			break;
-    			
-    		case pdf_parser::TYPE_ARRAY:
+                    $this->_straightOut(rtrim(rtrim(sprintf('%F', $value[1]), '0'), '.') . ' ');
+                } else {
+                    $this->_straightOut($value[1] . ' ');
+                }
+                break;
 
-    			// An array. Output the proper
-    			// structure and move on.
+            case pdf_parser::TYPE_ARRAY:
 
-    			$this->_straightOut('[');
-                for ($i = 0; $i < count($value[1]); $i++) {
-    				$this->_writeValue($value[1][$i]);
-    			}
+                // An array. Output the proper
+                // structure and move on.
 
-    			$this->_out(']');
-    			break;
+                $this->_straightOut('[');
+                if (is_array($value[1])) {
+                    for ($i = 0; $i < count($value[1]); $i++) {
+                        $this->_writeValue($value[1][$i]);
+                    }
+                }
 
-    		case pdf_parser::TYPE_DICTIONARY:
+                $this->_out(']');
+                break;
 
-    			// A dictionary.
-    			$this->_straightOut('<<');
+            case pdf_parser::TYPE_DICTIONARY:
 
-    			reset ($value[1]);
+                // A dictionary.
+                $this->_straightOut('<<');
 
-    			//while (list($k, $v) = each($value[1])) {
-                foreach($value[1] as $k => $v) {
-    				$this->_straightOut($k . ' ');
-    				$this->_writeValue($v);
-    			}
+                if (is_array($value[1])) {
+                    reset($value[1]);
 
-    			$this->_straightOut('>>');
-    			break;
+                    //while (list($k, $v) = each($value[1])) {
+                    foreach (($value[1] ?? []) as $k => $v) {
+                        $this->_straightOut($k . ' ');
+                        $this->_writeValue($v);
+                    }
+                }
 
-    		case pdf_parser::TYPE_OBJREF:
+                $this->_straightOut('>>');
+                break;
 
-    			// An indirect object reference
-    			// Fill the object stack if needed
-    			$cpfn =& $this->currentParser->filename;
-    			if (!isset($this->_doneObjStack[$cpfn][$value[1]])) {
-    			    $this->_newobj(false, true);
-    			    $this->_objStack[$cpfn][$value[1]] = array($this->n, $value);
+            case pdf_parser::TYPE_OBJREF:
+
+                // An indirect object reference
+                // Fill the object stack if needed
+                if (!isset($value[1])) {
+                    break;
+                }
+
+                $cpfn = & $this->currentParser->filename;
+                if (!isset($this->_doneObjStack[$cpfn][$value[1]])) {
+                    $this->_newobj(false, true);
+                    $this->_objStack[$cpfn][$value[1]] = array($this->n, $value);
                     $this->_doneObjStack[$cpfn][$value[1]] = array($this->n, $value);
                 }
                 $objId = $this->_doneObjStack[$cpfn][$value[1]][0];
 
-    			$this->_out($objId . ' 0 R');
-    			break;
+                $this->_out($objId . ' 0 R');
+                break;
 
-    		case pdf_parser::TYPE_STRING:
+            case pdf_parser::TYPE_STRING:
 
-    			// A string.
+                // A string.
                 $this->_straightOut('(' . $value[1] . ')');
 
-    			break;
+                break;
 
-    		case pdf_parser::TYPE_STREAM:
+            case pdf_parser::TYPE_STREAM:
 
-    			// A stream. First, output the
-    			// stream dictionary, then the
-    			// stream data itself.
-                $this->_writeValue($value[1]);
-    			$this->_out('stream');
-    			$this->_out($value[2][1]);
-    			$this->_straightOut("endstream");
-    			break;
-    			
+                // A stream. First, output the
+                // stream dictionary, then the
+                // stream data itself.
+                if (isset($value[1])) {
+                    $this->_writeValue($value[1]);
+                }
+                $this->_out('stream');
+                if (is_array($value[2]) && isset($value[2][1])) {
+                    $this->_out($value[2][1]);
+                }
+                $this->_straightOut("endstream");
+                break;
+
             case pdf_parser::TYPE_HEX:
                 $this->_straightOut('<' . $value[1] . '>');
                 break;
 
             case pdf_parser::TYPE_BOOLEAN:
-    		    $this->_straightOut($value[1] ? 'true ' : 'false ');
-    		    break;
-            
-    		case pdf_parser::TYPE_NULL:
+                $this->_straightOut($value[1] ? 'true ' : 'false ');
+                break;
+
+            case pdf_parser::TYPE_NULL:
                 // The null object.
 
-    			$this->_straightOut('null ');
-    			break;
-    	}
+                $this->_straightOut('null ');
+                break;
+        }
     }
-    
-    
+
+
     /**
      * Modified _out() method so not each call will add a newline to the output.
      */
@@ -622,32 +656,32 @@ class FPDI extends FPDF_TPL
     {
         if (!is_subclass_of($this, 'TCPDF')) {
             if ($this->state == 2) {
-        		$this->pages[$this->page] .= $s;
+                $this->pages[$this->page] .= $s;
             } else {
-        		$this->buffer .= $s;
+                $this->buffer .= $s;
             }
 
         } else {
             if ($this->state == 2) {
-				if ($this->inxobj) {
-					// we are inside an XObject template
-					$this->xobjects[$this->xobjid]['outdata'] .= $s;
-				} else if ((!$this->InFooter) AND isset($this->footerlen[$this->page]) AND ($this->footerlen[$this->page] > 0)) {
-					// puts data before page footer
-					$pagebuff = $this->getPageBuffer($this->page);
-					$page = substr($pagebuff, 0, -$this->footerlen[$this->page]);
-					$footer = substr($pagebuff, -$this->footerlen[$this->page]);
-					$this->setPageBuffer($this->page, $page . $s . $footer);
-					// update footer position
-					$this->footerpos[$this->page] += strlen($s);
-				} else {
-					// set page data
-					$this->setPageBuffer($this->page, $s, true);
-				}
-			} else if ($this->state > 0) {
-				// set general data
-				$this->setBuffer($s);
-			}
+                if ($this->inxobj) {
+                    // we are inside an XObject template
+                    $this->xobjects[$this->xobjid]['outdata'] .= $s;
+                } elseif ((!$this->InFooter) and isset($this->footerlen[$this->page]) and ($this->footerlen[$this->page] > 0)) {
+                    // puts data before page footer
+                    $pagebuff = $this->getPageBuffer($this->page);
+                    $page = substr($pagebuff, 0, -$this->footerlen[$this->page]);
+                    $footer = substr($pagebuff, -$this->footerlen[$this->page]);
+                    $this->setPageBuffer($this->page, $page . $s . $footer);
+                    // update footer position
+                    $this->footerpos[$this->page] += strlen($s);
+                } else {
+                    // set page data
+                    $this->setPageBuffer($this->page, $s, true);
+                }
+            } elseif ($this->state > 0) {
+                // set general data
+                $this->setBuffer($s);
+            }
         }
     }
 
@@ -661,7 +695,7 @@ class FPDI extends FPDF_TPL
         parent::_enddoc();
         $this->_closeParsers();
     }
-    
+
     /**
      * Close all files opened by parsers.
      *
@@ -670,13 +704,13 @@ class FPDI extends FPDF_TPL
     protected function _closeParsers()
     {
         if ($this->state > 2) {
-          	$this->cleanUp();
+            $this->cleanUp();
             return true;
         }
 
         return false;
     }
-    
+
     /**
      * Removes cycled references and closes the file handles of the parser objects.
      */

@@ -82,6 +82,10 @@ if (!class_exists('TCPDF', false)) {
          */
         protected function _prepareValue(&$value)
         {
+            if (!is_array($value) || !isset($value[0])) {
+                return;
+            }
+
             switch ($value[0]) {
                 case pdf_parser::TYPE_STRING:
                     if ($this->encrypted) {
@@ -92,12 +96,14 @@ if (!class_exists('TCPDF', false)) {
                     break;
 
                 case pdf_parser::TYPE_STREAM:
-                    if ($this->encrypted) {
+                    if ($this->encrypted && isset($value[2][1])) {
                         $value[2][1] = $this->_encrypt_data($this->_currentObjId, $value[2][1]);
-                        $value[1][1]['/Length'] = array(
-                            pdf_parser::TYPE_NUMERIC,
-                            strlen($value[2][1])
-                        );
+                        if (isset($value[1][1]) && is_array($value[1][1])) {
+                            $value[1][1]['/Length'] = array(
+                                pdf_parser::TYPE_NUMERIC,
+                                strlen($value[2][1])
+                            );
+                        }
                     }
                     break;
 
@@ -123,7 +129,7 @@ if (!class_exists('TCPDF', false)) {
         {
             $out = '';
             for ($count = 0, $n = strlen($s); $count < $n; $count++) {
-                if ($s[$count] != '\\' || $count == $n-1) {
+                if ($s[$count] != '\\' || $count == $n - 1) {
                     $out .= $s[$count];
                 } else {
                     switch ($s[++$count]) {
@@ -148,8 +154,9 @@ if (!class_exists('TCPDF', false)) {
                             $out .= chr(0x0A);
                             break;
                         case "\r":
-                            if ($count != $n-1 && $s[$count+1] == "\n")
+                            if ($count != $n - 1 && $s[$count + 1] == "\n") {
                                 $count++;
+                            }
                             break;
                         case "\n":
                             break;
@@ -159,12 +166,12 @@ if (!class_exists('TCPDF', false)) {
                                 ord($s[$count]) <= ord('9')) {
                                 $oct = ''. $s[$count];
 
-                                if (ord($s[$count+1]) >= ord('0') &&
-                                    ord($s[$count+1]) <= ord('9')) {
+                                if (ord($s[$count + 1]) >= ord('0') &&
+                                    ord($s[$count + 1]) <= ord('9')) {
                                     $oct .= $s[++$count];
 
-                                    if (ord($s[$count+1]) >= ord('0') &&
-                                        ord($s[$count+1]) <= ord('9')) {
+                                    if (ord($s[$count + 1]) >= ord('0') &&
+                                        ord($s[$count + 1]) <= ord('9')) {
                                         $oct .= $s[++$count];
                                     }
                                 }

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of FPDI
  *
@@ -99,8 +100,9 @@ class FilterLZW
     {
         $this->_sTable = array();
 
-        for ($i = 0; $i < 256; $i++)
+        for ($i = 0; $i < 256; $i++) {
             $this->_sTable[$i] = chr($i);
+        }
 
         $this->_tIdx = 258;
         $this->_bitsToGet = 9;
@@ -118,9 +120,9 @@ class FilterLZW
 
         if ($this->_tIdx == 511) {
             $this->_bitsToGet = 10;
-        } else if ($this->_tIdx == 1023) {
+        } elseif ($this->_tIdx == 1023) {
             $this->_bitsToGet = 11;
-        } else if ($this->_tIdx == 2047) {
+        } elseif ($this->_tIdx == 2047) {
             $this->_bitsToGet = 12;
         }
     }
@@ -144,7 +146,7 @@ class FilterLZW
             $this->_nextBits += 8;
         }
 
-        $code = ($this->_nextData >> ($this->_nextBits - $this->_bitsToGet)) & $this->_andTable[$this->_bitsToGet-9];
+        $code = ($this->_nextData >> ($this->_nextBits - $this->_bitsToGet)) & $this->_andTable[$this->_bitsToGet - 9];
         $this->_nextBits -= $this->_bitsToGet;
 
         return $code;

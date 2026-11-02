@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This file is part of FPDI
  *
@@ -41,7 +42,7 @@ class FilterASCII85
             if ($ch == $ord['~']) {
                 break;
             }
-            if (preg_match('/^\s$/',chr($ch))) {
+            if (preg_match('/^\s$/', chr($ch))) {
                 continue;
             }
             if ($ch == $ord['z'] && $state == 0) {
@@ -74,16 +75,16 @@ class FilterASCII85
         }
 
         if ($state == 2) {
-            $r = $chn[0] * 85 * 85 * 85 * 85 + ($chn[1]+1) * 85 * 85 * 85;
+            $r = $chn[0] * 85 * 85 * 85 * 85 + ($chn[1] + 1) * 85 * 85 * 85;
             $out .= chr($r >> 24);
 
-        } else if ($state == 3) {
-            $r = $chn[0] * 85 * 85 * 85 * 85 + $chn[1] * 85 * 85 * 85  + ($chn[2]+1) * 85 * 85;
+        } elseif ($state == 3) {
+            $r = $chn[0] * 85 * 85 * 85 * 85 + $chn[1] * 85 * 85 * 85  + ($chn[2] + 1) * 85 * 85;
             $out .= chr($r >> 24);
             $out .= chr($r >> 16);
 
-        } else if ($state == 4) {
-            $r = $chn[0] * 85 * 85 * 85 * 85 + $chn[1] * 85 * 85 * 85  + $chn[2] * 85 * 85  + ($chn[3]+1) * 85 ;
+        } elseif ($state == 4) {
+            $r = $chn[0] * 85 * 85 * 85 * 85 + $chn[1] * 85 * 85 * 85  + $chn[2] * 85 * 85  + ($chn[3] + 1) * 85 ;
             $out .= chr($r >> 24);
             $out .= chr($r >> 16);
             $out .= chr($r >> 8);
