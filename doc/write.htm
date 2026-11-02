@@ -1,12 +1,44 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Write</title>
-<link type="text/css" rel="stylesheet" href="../fpdf.css">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  body { background: #f4f6f9; }
+  .doc-shell { max-width: 1100px; margin: 0 auto; }
+  .doc-card { background: #fff; border: 0; border-radius: 1rem; box-shadow: 0 10px 30px rgba(15, 23, 42, .08); padding: 2.5rem; }
+  .doc-card h1 { font-weight: 700; color: #0d6efd; border-bottom: 3px solid #0d6efd; padding-bottom: .75rem; margin-bottom: 1.5rem; }
+  .doc-card h2 { margin-top: 2rem; color: #1f2937; }
+  .doc-card h3 { margin-top: 1.5rem; color: #374151; }
+  .doc-card a { color: #0d6efd; text-decoration: none; }
+  .doc-card a:hover { text-decoration: underline; }
+  .doc-card code, .doc-card pre { background: #f1f5f9; border-radius: .35rem; }
+  .doc-card pre { padding: 1rem; overflow-x: auto; }
+  footer { color: #6b7280; }
+</style>
 </head>
 <body>
-<h1>Write</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="../README.md"><i class="bi bi-file-earmark-pdf"></i> XFPDF</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="../FAQ.htm">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="../doc/index.htm">Documentation</a></li>
+        <li class="nav-item"><a class="nav-link" href="../tutorial/index.htm">Tutorials</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container doc-shell pb-5">
+  <div class="doc-card">
+    <h1>Write</h1>
 <code>Write(<b>float</b> h, <b>string</b> txt [, <b>mixed</b> link])</code>
 <h2>Description</h2>
 This method prints text from the current position. When the right margin is reached (or the \n
@@ -47,5 +79,21 @@ $pdf-&gt;Write(5,'www.fpdf.org','http://www.fpdf.org');</code></pre>
 <a href="setautopagebreak.htm">SetAutoPageBreak()</a>.
 <hr style="margin-top:1.5em">
 <div style="text-align:center"><a href="index.htm">Index</a></div>
+  </div>
+  <footer class="text-center py-4 small">&copy; XFPDF Documentation</footer>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(function () {
+    $('a[href^="#"]').on('click', function (e) {
+      var target = $(this.getAttribute('href'));
+      if (target.length) {
+        e.preventDefault();
+        $('html, body').animate({ scrollTop: target.offset().top - 80 }, 400);
+      }
+    });
+  });
+</script>
 </body>
 </html>
