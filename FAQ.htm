@@ -1,17 +1,44 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html>
+<!DOCTYPE html>
+<html lang="en">
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>FAQ</title>
-<link type="text/css" rel="stylesheet" href="fpdf.css">
-<style type="text/css">
-ul {list-style-type:none; margin:0; padding:0}
-ul#answers li {margin-top:1.8em}
-.question {font-weight:bold; color:#900000}
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+<style>
+  body { background: #f4f6f9; }
+  .doc-shell { max-width: 1100px; margin: 0 auto; }
+  .doc-card { background: #fff; border: 0; border-radius: 1rem; box-shadow: 0 10px 30px rgba(15, 23, 42, .08); padding: 2.5rem; }
+  .doc-card h1 { font-weight: 700; color: #0d6efd; border-bottom: 3px solid #0d6efd; padding-bottom: .75rem; margin-bottom: 1.5rem; }
+  .doc-card h2 { margin-top: 2rem; color: #1f2937; }
+  .doc-card h3 { margin-top: 1.5rem; color: #374151; }
+  .doc-card a { color: #0d6efd; text-decoration: none; }
+  .doc-card a:hover { text-decoration: underline; }
+  .doc-card code, .doc-card pre { background: #f1f5f9; border-radius: .35rem; }
+  .doc-card pre { padding: 1rem; overflow-x: auto; }
+  footer { color: #6b7280; }
 </style>
 </head>
 <body>
-<h1>FAQ</h1>
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary shadow-sm mb-4">
+  <div class="container">
+    <a class="navbar-brand fw-bold" href="./README.md"><i class="bi bi-file-earmark-pdf"></i> XFPDF</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="./FAQ.htm">FAQ</a></li>
+        <li class="nav-item"><a class="nav-link" href="./doc/index.htm">Documentation</a></li>
+        <li class="nav-item"><a class="nav-link" href="./tutorial/index.htm">Tutorials</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+<div class="container doc-shell pb-5">
+  <div class="doc-card">
+    <h1>FAQ</h1>
 <ul>
 <li><b>1.</b> <a href='#q1'>What's exactly the license of FPDF? Are there any usage restrictions?</a></li>
 <li><b>2.</b> <a href='#q2'>When I try to create a PDF, a lot of weird characters show on the screen. Why?</a></li>
@@ -19,7 +46,7 @@ ul#answers li {margin-top:1.8em}
 <li><b>4.</b> <a href='#q4'>I can't make line breaks work. I put \n in the string printed by MultiCell but it doesn't work.</a></li>
 <li><b>5.</b> <a href='#q5'>I try to display a variable in the Header method but nothing prints.</a></li>
 <li><b>6.</b> <a href='#q6'>I defined the Header and Footer methods in my PDF class but nothing appears.</a></li>
-<li><b>7.</b> <a href='#q7'>Accented characters are replaced by some strange characters like é.</a></li>
+<li><b>7.</b> <a href='#q7'>Accented characters are replaced by some strange characters like Ã©.</a></li>
 <li><b>8.</b> <a href='#q8'>I try to display the Euro symbol but it doesn't work.</a></li>
 <li><b>9.</b> <a href='#q9'>I get the following error when I try to generate a PDF: Some data has already been output, can't send PDF file</a></li>
 <li><b>10.</b> <a href='#q10'>I draw a frame with very precise dimensions, but when printed I notice some differences.</a></li>
@@ -151,7 +178,7 @@ You have to create an object from the PDF class, not FPDF:
 </li>
 
 <li id='q7'>
-<p><b>7.</b> <span class='question'>Accented characters are replaced by some strange characters like é.</span></p>
+<p><b>7.</b> <span class='question'>Accented characters are replaced by some strange characters like Ã©.</span></p>
 Don't use UTF-8 encoding. Standard FPDF fonts use ISO-8859-1 or Windows-1252.
 It is possible to perform a conversion to ISO-8859-1 with utf8_decode():
 <div class="doc-source">
@@ -337,5 +364,21 @@ to perform this task. Some free command-line tools also exist:<br>
 <a href="http://www.accesspdf.com/pdftk/" target="_blank">pdftk</a>
 </li>
 </ul>
+  </div>
+  <footer class="text-center py-4 small">&copy; XFPDF Documentation</footer>
+</div>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  $(function () {
+    $('a[href^="#"]').on('click', function (e) {
+      var target = $(this.getAttribute('href'));
+      if (target.length) {
+        e.preventDefault();
+        $('html, body').animate({ scrollTop: target.offset().top - 80 }, 400);
+      }
+    });
+  });
+</script>
 </body>
 </html>
